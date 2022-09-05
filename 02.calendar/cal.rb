@@ -1,64 +1,35 @@
 #!/usr/bin/env ruby
 
 require 'optparse'
+require 'date'
 
 input = ARGV.getopts('y:', 'm:')
 
-now = Time.now
-
-# use now if input not available
+now = Date.today
 year = input['y'] ? input['y'].to_i : now.year
 month = input['m'] ? input['m'].to_i : now.month
+this_month = now.year == year && now.month == month
 
-this_month = false
-if now.year == year && now.month == month
-  this_month = true
-end
+current_day_of_week = Date.new(year, month).wday
+puts '     ' + month.to_s + '月　' + year.to_s
+puts '日 月 火 水 木 金 土'
+print "   " * current_day_of_week
 
-# Get first day of the month
-start_day = Time.new(year, month).wday
+dates_in_month = Date.new(year, month, -1).day
 
-# Get last date of the month
-dates_in_month = (Time.new(year, (month % 12) + 1) - 1).day
-
-# Print input calendar date
-puts '      ' + month.to_s + '月　' + year.to_s
-
-# Print day of week
-puts ' 日 月 火 水 木 金 土'
-
-current_day_of_week = 0
-
-# Skip day
-start_day.times do |d|
-    print "   "
-    current_day_of_week += 1
-end
-
-date = 1
-while date <= dates_in_month
+(1..dates_in_month).each do |date|
   if this_month && now.day == date
-    if date < 10
-      print "  \e[32m#{date.to_s}\e[0m"
-    else
-      print " \e[32m#{date.to_s}\e[0m"
-    end
-  else
-    if date < 10
-      print "  " + date.to_s
-    else
-      print " " + date.to_s
-    end
+    print "\e[32m#{date.to_s.rjust(2) + ' '}\e[0m"
+  else 
+    print date.to_s.rjust(2) + ' '
   end
-  
-  date += 1
-  current_day_of_week += 1
 
-  # Reset week
-  if current_day_of_week >= 7
+  if current_day_of_week < 6
+    current_day_of_week += 1
+  else
     current_day_of_week = 0
-    puts ' '
+    puts
   end
 end
 
-puts ' '
+puts

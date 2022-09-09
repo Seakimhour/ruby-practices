@@ -118,3 +118,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+
+# Ruby Test Files
+/05.ls/*
+!/05.ls/ls.rb
+!.gitkeep

@@ -8,7 +8,7 @@ col_width = 30
 def get_items(path)
   Dir.chdir(path)
   items = Dir.glob("*")
-  items.sort!
+  items.sort
 end
 
 items = get_items(path)

@@ -1,17 +1,24 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-path = ARGV[0] && Dir.exist?(ARGV[0]) ? ARGV[0] : '.'
+require 'optparse'
+
+parser = OptionParser.new
+parser.on('-a', 'List files including hidden files')
+options = {path: '.'}
+parser.parse!(into: options)
+options[:path] = parser.parse![0] if parser.parse![0] && Dir.exist?(parser.parse![0]) 
+
 cols = 3
 col_width = 30
 
-def get_items(path)
-  Dir.chdir(path)
-  items = Dir.glob("*")
+def get_items(options)
+  Dir.chdir(options[:path])
+  items = options[:a] ? Dir.glob("*", File::FNM_DOTMATCH) : Dir.glob("*")
   items.sort
 end
 
-items = get_items(path)
+items = get_items(options)
 rows = (items.count / cols.to_f).ceil(0)
 
 def get_string_space(string, width)

@@ -3,11 +3,6 @@
 
 require 'optparse'
 
-def get_items(glob_pattern)
-  Dir.chdir(ARGV[0] && Dir.exist?(ARGV[0]) ? ARGV[0] : '.')
-  Dir.glob(glob_pattern).sort
-end
-
 def get_string_space(string, width)
   string = string.force_encoding(Encoding::UTF_8) if string != ''
   string_replace_half_width_katakana = string.gsub(/[ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜｦﾝｯｧｨｩｪｫｬｭｮﾞﾟ]/u, '*')
@@ -19,16 +14,16 @@ end
 
 cols = 3
 col_width = 30
-glob_pattern = '*'
+flag = 0
 
 parser = OptionParser.new
 parser.on('-a', 'List files including hidden files') do
-  glob_pattern = '{*,.*}'
+  flag = File::FNM_DOTMATCH
 end
 parser.parse!
 
-items = get_items(glob_pattern)
-rows = (items.count / cols.to_f).ceil(0)
+items = Dir.glob('*', flag, base: ARGV[0] && Dir.exist?(ARGV[0]) ? ARGV[0] : '.').sort
+rows = (items.count / cols.to_f).ceil()
 
 rows.times do |r|
   cols.times do |c|

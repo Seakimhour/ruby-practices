@@ -31,7 +31,7 @@ parser.parse!
 items = Dir.glob('*', options[:hidden_files], base: ARGV[0] && Dir.exist?(ARGV[0]) ? ARGV[0] : '.').sort
 items.reverse! if options[:reverse]
 
-rows = (items.count / cols.to_f).ceil()
+rows = (items.count / cols.to_f).ceil
 
 rows.times do |r|
   cols.times do |c|

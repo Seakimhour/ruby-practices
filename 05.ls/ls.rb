@@ -14,16 +14,24 @@ end
 
 cols = 3
 col_width = 30
-flag = 0
+options = {
+  hidden_files: 0,
+  reverse: false
+}
 
 parser = OptionParser.new
 parser.on('-a', 'List files including hidden files') do
-  flag = File::FNM_DOTMATCH
+  options[:hidden_files] = File::FNM_DOTMATCH
+end
+parser.on('-r', 'Reverse the sorting order') do
+  options[:reverse] = true
 end
 parser.parse!
 
-items = Dir.glob('*', flag, base: ARGV[0] && Dir.exist?(ARGV[0]) ? ARGV[0] : '.').sort
-rows = (items.count / cols.to_f).ceil()
+items = Dir.glob('*', options[:hidden_files], base: ARGV[0] && Dir.exist?(ARGV[0]) ? ARGV[0] : '.').sort
+items.reverse! if options[:reverse]
+
+rows = (items.count / cols.to_f).ceil
 
 rows.times do |r|
   cols.times do |c|

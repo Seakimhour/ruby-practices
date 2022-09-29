@@ -24,11 +24,7 @@ def readable_permisions(file_name)
     '1' => '--x'
   }
 
-  permisions_string = File.directory?(file_name) ? 'd' : '-'
-  format('%o', File.stat(file_name).mode)[-3..].chars.each do |digit|
-    permisions_string += permissions[digit]
-  end
-  permisions_string
+  (File.directory?(file_name) ? 'd' : '-') + format('%o', File.stat(file_name).mode)[-3..].chars.map { |digit| permissions[digit] }.join
 end
 
 def item_long_format(path, item)
@@ -36,13 +32,19 @@ def item_long_format(path, item)
 
   file = File.stat(file_name)
 
-  readable_permisions(file_name) + format(' %3s', file.nlink) + format(' %15s', Etc.getpwuid(file.uid).name) + format(' %15s', Etc.getgrgid(file.gid).name) + format(' %8s', file.size) + format(' %s', file.ctime.ctime) + format(' %s', item)
+  item_long_format = readable_permisions(file_name)
+  item_long_format << format(' %3s', file.nlink)
+  item_long_format << format(' %15s', Etc.getpwuid(file.uid).name)
+  item_long_format << format(' %15s', Etc.getgrgid(file.gid).name)
+  item_long_format << format(' %8s', file.size)
+  item_long_format << format(' %s', file.ctime.ctime)
+  item_long_format << format(' %s', item)
 end
 
+cols = 3
+col_width = 30
 options = {
   path: '.',
-  cols: 3,
-  col_width: 30,
   hidden_files: 0,
   reverse: false,
   long_format: false
@@ -67,14 +69,16 @@ options[:path] = ARGV[0] if ARGV[0] && Dir.exist?(ARGV[0])
 items = Dir.glob('*', options[:hidden_files], base: options[:path]).sort
 items.reverse! if options[:reverse]
 
-rows = (items.count / options[:cols].to_f).ceil
-rows.times do |r|
-  options[:cols].times do |c|
-    if options[:long_format]
-      printf(item_long_format(options[:path], items[r]))
-    else
-      printf(get_string_space(items[r + (c * rows)].to_s, options[:col_width]))
-    end
+if options[:long_format]
+  items.count do |item|
+    puts item_long_format(options[:path], item)
   end
-  puts
+else
+  rows = (items.count / cols.to_f).ceil
+  rows.times do |r|
+    cols.times do |c|
+      printf(get_string_space(items[r + (c * rows)].to_s, col_width))
+    end
+    puts
+  end
 end

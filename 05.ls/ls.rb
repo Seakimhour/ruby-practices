@@ -59,7 +59,6 @@ parser.on('-r', 'Reverse the sorting order') do
 end
 parser.on('-l', 'List files in long format') do
   options[:long_format] = true
-  options[:cols] = 1
 end
 parser.parse!
 

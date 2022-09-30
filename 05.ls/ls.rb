@@ -69,7 +69,7 @@ items = Dir.glob('*', options[:hidden_files], base: options[:path]).sort
 items.reverse! if options[:reverse]
 
 if options[:long_format]
-  items.count do |item|
+  items.each do |item|
     puts item_long_format(options[:path], item)
   end
 else

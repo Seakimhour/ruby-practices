@@ -6,12 +6,7 @@ require 'optparse'
 max_length = 7
 output = []
 
-options = {
-  all: true,
-  lines: false,
-  words: false,
-  bytes: false
-}
+options = {}
 
 def get_output_array(raw_lines, options)
   text = raw_lines.join
@@ -21,26 +16,29 @@ def get_output_array(raw_lines, options)
   byte_count = text.bytesize
 
   output_array = []
-  output_array.push(line_count.to_s) if options[:all] || options[:lines]
-  output_array.push(word_count.to_s) if options[:all] || options[:words]
-  output_array.push(byte_count.to_s) if options[:all] || options[:bytes]
+  output_array.push(line_count.to_s) if options[:lines]
+  output_array.push(word_count.to_s) if options[:words]
+  output_array.push(byte_count.to_s) if options[:bytes]
   output_array
 end
 
 parser = OptionParser.new
 parser.on('-l', 'Lines count') do
-  options[:all] = false
   options[:lines] = true
 end
 parser.on('-w', 'Words count') do
-  options[:all] = false
   options[:words] = true
 end
 parser.on('-c', 'Bytes count') do
-  options[:all] = false
   options[:bytes] = true
 end
 parser.parse!
+
+if options.empty?
+  options[:lines] = true
+  options[:words] = true
+  options[:bytes] = true
+end
 
 if ARGV[0]
   if File.file?(ARGV[0])

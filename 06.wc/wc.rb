@@ -3,7 +3,6 @@
 
 require 'optparse'
 
-max_length = 7
 output = []
 
 options = {}
@@ -16,10 +15,21 @@ def get_output_array(raw_lines, options)
   byte_count = text.bytesize
 
   output_array = []
-  output_array.push(line_count.to_s) if options[:lines]
-  output_array.push(word_count.to_s) if options[:words]
-  output_array.push(byte_count.to_s) if options[:bytes]
+  output_array.push(line_count) if options[:lines]
+  output_array.push(word_count) if options[:words]
+  output_array.push(byte_count) if options[:bytes]
   output_array
+end
+
+def print_output(output_array, name_array)
+  max_number_length = output_array.map { |number_array| number_array.map { |number| number.to_s.length }.max }.max
+
+  output_array.each_with_index do |number_array, output_index|
+    number_array.each do |number|
+      print(format("%#{max_number_length}s ", number))
+    end
+    puts format("%#{max_number_length}s", name_array[output_index])
+  end
 end
 
 parser = OptionParser.new
@@ -40,18 +50,23 @@ if options.empty?
   options[:bytes] = true
 end
 
-if ARGV[0]
-  if File.file?(ARGV[0])
-    output = get_output_array(File.readlines(ARGV[0]), options)
-    max_length = output.map(&:length).max
-    output.push(ARGV[0])
-  elsif File.directory?(ARGV[0])
-    puts "wc: #{ARGV[0]}: Is a directory"
-  else
-    puts "wc: #{ARGV[0]}: No such file or directory"
+if ARGV.any?
+  ARGV.each do |arg|
+    if File.file?(arg)
+      output.push(get_output_array(File.readlines(arg), options))
+    elsif File.directory?(arg)
+      puts "wc: #{arg}: Is a directory"
+    else
+      puts "wc: #{arg}: No such file or directory"
+    end
+  end
+
+  if ARGV.length > 1
+    output.push(output.transpose.map(&:sum))
+    ARGV.push('total')
   end
 else
-  output = get_output_array(readlines, options)
+  output.push(get_output_array(readlines, options))
 end
 
-puts output.map { |number| format("%#{max_length}s", number) }.join(' ')
+print_output(output, ARGV)

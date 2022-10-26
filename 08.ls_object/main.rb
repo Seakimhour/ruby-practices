@@ -2,10 +2,9 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require_relative 'ShortPrinter'
-require_relative 'DetailPrinter'
+require_relative 'ls'
 
-def args_parse
+def options
   options = {
     directory: './',
     hidden_files: 0,
@@ -24,13 +23,5 @@ def args_parse
   options
 end
 
-def get_files(options)
-  Dir.glob('*', options[:hidden_files], base: options[:directory]).sort
-end
-
-options = args_parse
-files = get_files(options)
-files.reverse! if options[:reverse]
-
-printer = options[:long_format] ? DetailPrinter.new(options[:directory]) : ShortPrinter.new
-printer.print_output(files)
+ls = LS.new(options)
+ls.output

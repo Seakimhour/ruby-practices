@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class DetailPrinter
-
   require 'etc'
 
   FILE_PERMISSION = {
@@ -33,7 +32,7 @@ class DetailPrinter
     # ls use --block-size=1024 while File::Stat Blocks use 512B make it return double the size compared to ls
     puts "total #{total_block / 2}"
 
-    files_detail.each { |stat|
+    files_detail.each do |stat|
       printf([
         '%<permission>s',
         "%<nlink>#{columns_length[:nlink]}i",
@@ -44,7 +43,7 @@ class DetailPrinter
         '%<filename>s'
       ].join(' '), stat)
       puts
-    }
+    end
   end
 
   def find_columns_length(files_detail)
@@ -58,10 +57,9 @@ class DetailPrinter
 
   def file_detail_format(file)
     file_path = @directory + file
-  
+
     file_stat = File.stat(file_path)
 
-    # 
     {
       blocks: file_stat.blocks,
       permission: readable_permission(file_path),

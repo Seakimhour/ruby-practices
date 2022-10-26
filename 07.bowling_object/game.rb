@@ -4,8 +4,6 @@
 require_relative 'frame'
 
 class Game
-  attr_reader :frame_array
-
   def initialize(mark_array)
     @frame_array = get_frames(mark_array)
   end
@@ -27,7 +25,7 @@ class Game
 
   def score
     score = 0
-    frame_array.each_with_index do |frame, index|
+    @frame_array.each_with_index do |frame, index|
       if index == 9
         score += frame.raw_score
         next
@@ -45,13 +43,13 @@ class Game
   end
 
   def strike_bonus(index)
-    return 10 + frame_array[index + 1].first_shot.score + frame_array[index + 2].first_shot.score if frame_array[index + 1].strike? && index < 8
+    return 10 + @frame_array[index + 1].first_shot.score + @frame_array[index + 2].first_shot.score if @frame_array[index + 1].strike? && index < 8
 
-    10 + frame_array[index + 1].first_shot.score + frame_array[index + 1].second_shot.score
+    10 + @frame_array[index + 1].first_shot.score + @frame_array[index + 1].second_shot.score
   end
 
   def spare_bonus(index)
-    10 + frame_array[index + 1].first_shot.score
+    10 + @frame_array[index + 1].first_shot.score
   end
 end
 

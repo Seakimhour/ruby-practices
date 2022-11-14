@@ -3,8 +3,6 @@
 require 'etc'
 
 class FileDetail
-  attr_reader :stat
-
   COLUMN_WIDTH = 30
 
   FILE_PERMISSION = {

@@ -1,24 +1,27 @@
 # frozen_string_literal: true
 
 require_relative 'printer'
+require_relative 'file_detail'
 
 class LS
   def initialize(options)
-    @directory = options[:directory]
     @long_format = options[:long_format]
-    @files = get_files(options[:hidden_files], options[:reverse])
+    @hidden_files = options[:hidden_files]
+    @reverse = options[:reverse]
+    @directory = options[:directory]
   end
 
   def output
-    printer = Printer.new(@directory, @long_format, @files)
+    files_detail = get_files_detail()
+    printer = Printer.new(@long_format, files_detail)
     printer.print
   end
 
   private
 
-  def get_files(hidden_files_flags, reverse)
-    files = Dir.glob('*', hidden_files_flags, base: @directory).sort
-    files = files.reverse if reverse
-    files
+  def get_files_detail()
+    files = Dir.glob('*', @hidden_files, base: @directory).sort
+    files = files.reverse if @reverse
+    files.map { |name| FileDetail.new(@directory + name) }
   end
 end

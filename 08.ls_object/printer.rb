@@ -5,9 +5,9 @@ require_relative 'file_detail'
 class Printer
   NUMBER_OF_COLUMN = 3
 
-  def initialize(directory, long_format, files)
+  def initialize(long_format, files_detail)
     @long_format = long_format
-    @files_detail = files_details(directory, files)
+    @files_detail = files_detail
   end
 
   def print
@@ -16,24 +16,38 @@ class Printer
 
   private
 
-  def files_details(directory, files)
-    files.map { |name| FileDetail.new(directory, name) }
-  end
-
   def print_short_format
-    number_of_row = (@files_detail.count / NUMBER_OF_COLUMN.to_f).ceil
-
-    number_of_row.times do |row|
-      NUMBER_OF_COLUMN.times do |column|
-        index = row + column * number_of_row
-        printf(@files_detail[index].name_with_padding) if @files_detail[index]
+    columns_files = column_format
+    columns_length = find_short_format_columns_length(columns_files)
+    columns_files.each do |column|
+      column.each_with_index do |filename, index|
+        printf("%-#{columns_length[index]}s ", filename)
       end
       puts
     end
   end
 
+  def column_format
+    number_of_row = (@files_detail.count / NUMBER_OF_COLUMN.to_f).ceil
+
+    column_files = []
+    number_of_row.times do |row|
+      column_files[row] = []
+      NUMBER_OF_COLUMN.times do |column|
+        index = row + column * number_of_row
+        column_files[row][column] = @files_detail[index].filename if @files_detail[index]
+      end
+    end
+    column_files
+  end
+
+  def find_short_format_columns_length(columns_files)
+    transpose_columns_files = columns_files.reduce(&:zip).map(&:flatten).map
+    transpose_columns_files.map { |files| files.map { |file| file ? file.length : 0 }.max }
+  end
+
   def print_long_format
-    columns_length = find_columns_length(@files_detail)
+    columns_length = find_long_format_columns_length(@files_detail)
 
     puts "total #{@files_detail.sum(&:blocks) / 2}"
     @files_detail.each do |file|
@@ -57,12 +71,12 @@ class Printer
       username: file.username,
       groupname: file.groupname,
       bytesize: file.bytesize,
-      time: file.time,
+      time: file.time.strftime('%b %e %k:%M'),
       filename: file.filename
     }
   end
 
-  def find_columns_length(files_detail)
+  def find_long_format_columns_length(files_detail)
     {
       nlink: files_detail.map { |file| file.nlink.to_s.length }.max,
       username: files_detail.map { |file| file.username.length }.max,

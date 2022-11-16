@@ -3,7 +3,6 @@
 require 'etc'
 
 class FileDetail
-  COLUMN_WIDTH = 30
 
   FILE_PERMISSION = {
     '0' => '---',
@@ -16,17 +15,9 @@ class FileDetail
     '7' => 'rwx'
   }.freeze
 
-  def initialize(directory, name)
-    @name = name
-    @file_path = directory + name
+  def initialize(file_path)
+    @file_path = file_path
     @file_stat = File.stat(@file_path)
-  end
-
-  def name_with_padding
-    name = @name.force_encoding(Encoding::UTF_8)
-    name_without_half_width_katakana = name.gsub(/[ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜｦﾝｯｧｨｩｪｫｬｭｮﾞﾟ]/u, '*')
-    name_width = name_without_half_width_katakana.chars.map { |char| char.bytesize == 1 ? 1 : 2 }.sum
-    name + ' ' * (COLUMN_WIDTH - name_width)
   end
 
   def blocks
@@ -50,11 +41,11 @@ class FileDetail
   end
 
   def time
-    @file_stat.ctime.strftime('%b %e %k:%M')
+    @file_stat.ctime
   end
 
   def filename
-    @name
+    @file_path.split('/').last
   end
 
   def permission

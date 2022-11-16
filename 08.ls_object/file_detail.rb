@@ -3,7 +3,6 @@
 require 'etc'
 
 class FileDetail
-
   FILE_PERMISSION = {
     '0' => '---',
     '1' => '--x',

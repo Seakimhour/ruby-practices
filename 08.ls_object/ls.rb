@@ -12,14 +12,13 @@ class LS
   end
 
   def output
-    files_detail = get_files_detail()
     printer = Printer.new(@long_format, files_detail)
     printer.print
   end
 
   private
 
-  def get_files_detail()
+  def files_detail
     files = Dir.glob('*', @hidden_files, base: @directory).sort
     files = files.reverse if @reverse
     files.map { |name| FileDetail.new(@directory + name) }

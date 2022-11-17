@@ -40,11 +40,11 @@ class FileDetail
   end
 
   def time
-    @file_stat.ctime
+    File.birthtime(@file_path)
   end
 
   def filename
-    @file_path.split('/').last
+    File.basename(@file_path)
   end
 
   def permission

@@ -21,6 +21,6 @@ class LS
   def files_detail
     files = Dir.glob('*', @hidden_files, base: @directory).sort
     files = files.reverse if @reverse
-    files.map { |name| FileDetail.new(@directory + name) }
+    files.map { |name| FileDetail.new(File.join(@directory, name)) }
   end
 end

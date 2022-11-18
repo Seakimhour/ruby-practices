@@ -51,15 +51,13 @@ class Printer
 
     puts "total #{@files_detail.sum(&:blocks) / 2}"
     @files_detail.each do |file|
-      file_detail = file_detail_print_format(file)
-      file_detail[:short_time_format] = file_detail[:time].strftime('%b %e %k:%M')
       printf([
         '%<permission>s',
         "%<nlink>#{columns_length[:nlink]}i",
         "%<username>-#{columns_length[:username]}s",
         "%<groupname>-#{columns_length[:groupname]}s",
         "%<bytesize>#{columns_length[:bytesize]}s",
-        '%<short_time_format>s',
+        '%<time>s',
         '%<filename>s'
       ].join(' '), file_detail)
       puts
@@ -73,7 +71,7 @@ class Printer
       username: file.username,
       groupname: file.groupname,
       bytesize: file.bytesize,
-      time: file.time,
+      time: file.time.strftime('%b %e %k:%M'),
       filename: file.filename
     }
   end
